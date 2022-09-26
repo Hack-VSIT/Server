@@ -222,18 +222,23 @@ def addLocation():
 @app.route("/added_tour")
 @login_required
 def addedTour():
-    pass
+    tour = Tour.query.filter_by(uid=flask_login.current_user.id).all()
+    print(tour)
+    return render_template("addedTour.html", tour=tour)
 
 @app.route("/explore_tour/<int:tourId>")
 @login_required
-def exploreTour():
-    pass
-
+def exploreTour(tourId):
+    tour = Tour.query.filter_by(id=tourId).first()
+    print(tour)
+    return render_template("exploreTour.html", tour=tour)
+    
 @app.route("/explore_location/<int:locationId>")
 @login_required
-def exploreLocation():
-    pass
-
+def exploreLocation(locationId):
+    loc = Location.query.filter_by(id=locationId).first()
+    print(loc)
+    return render_template("exploreLocation.html", loc=loc)
 
 if __name__ == "__main__":
     app.run(debug=True)

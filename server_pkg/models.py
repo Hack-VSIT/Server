@@ -42,7 +42,7 @@ class Tour(db.Model):
     tours = db.relationship('Location', backref='tour_det', lazy=True)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<Tour %r>' % self.name
 
 
 class Location(db.Model):
@@ -66,4 +66,4 @@ class Location(db.Model):
     tid = db.Column(db.Integer, db.ForeignKey('tour.id'), nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<Location %r>' % self.name
