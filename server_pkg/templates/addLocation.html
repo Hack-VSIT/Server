@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title%}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<form action="{{ request.path }}" method="POST" class="card-body" , enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <!-- info lables -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+
+    <!-- heading -->
+    <div class="text-center">
+        <h2>User Authentication in Flask</h2>
+        <h5 class="text-primary">{{ text }}</h5>
+    </div>
+
+    <div class="name">
+        {{form.name.label}}
+        <div class="form-group mb-3">
+            {{ form.name(class_="form-control",placeholder="name")}}
+        </div>
+        {% for error in form.name.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="type">
+        {{form.type.label}}
+        <div class="form-group mb-3">
+            {{ form.type(class_="form-control",placeholder="type")}}
+        </div>
+        {% for error in form.type.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="site">
+        {{form.site.label}}
+        <div class="form-group mb-3">
+            {{ form.site(class_="form-control",placeholder="site")}}
+        </div>
+        {% for error in form.site.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="longitude">
+        {{form.longitude.label}}
+        <div class="form-group mb-3">
+            {{ form.longitude(class_="form-control",placeholder="longitude")}}
+        </div>
+        {% for error in form.longitude.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="latitude">
+        {{form.latitude.label}}
+        <div class="form-group mb-3">
+            {{ form.latitude(class_="form-control",placeholder="latitude")}}
+        </div>
+        {% for error in form.latitude.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="opening_timing">
+        {{form.opening_timing.label}}
+        <div class="form-group mb-3">
+            {{ form.opening_timing(class_="form-control",placeholder="opening_timing")}}
+        </div>
+        {% for error in form.opening_timing.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="photos">
+        {{form.photos.label}}
+        <div class="form-group mb-3">
+            {{ form.photos(class_="form-control",placeholder="photos")}}
+        </div>
+        {% for error in form.photos.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="description">
+        {{form.description.label}}
+        <div class="form-group mb-3">
+            {{ form.description(class_="form-control",placeholder="description")}}
+        </div>
+        {% for error in form.description.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    <div class="other_type">
+        {{form.other_type.label}}
+        <div class="form-group mb-3">
+            {{ form.other_type(class_="form-control",placeholder="other_type")}}
+        </div>
+        {% for error in form.other_type.errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor%}
+    </div>
+    <!--  -->
+    
+
+
+    {{form.submit(class="btn btn-block btn-primary mb-3")}}
+</form>
+
+
+{% endblock %}
