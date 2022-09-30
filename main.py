@@ -18,6 +18,12 @@ import os
 import imghdr
 from SQL import SQL
 
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map, icons
+from dynaconf import FlaskDynaconf
+
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -25,6 +31,11 @@ def load_user(user_id):
 
 
 app = create_app()
+FlaskDynaconf(app)
+GoogleMaps(
+    app,
+    # key="AIzaSyB2bXKNDezDf6YNVc-SauobynNHPo4RJb8"
+)
 
 
 
@@ -38,7 +49,42 @@ def session_handler():
 
 @app.route("/", methods=("GET", "POST"), strict_slashes=False)
 def index():
-    return render_template("index.html")
+    tours = Tour.query.filter_by(uid=flask_login.current_user.id).all()
+    print(tours)
+    mkr=[]
+    for i in tours:
+        mkr.append({
+                "icon": "//maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+                "lat": i.latitude,
+                "lng": i.longitude,
+                "infobox": (
+                    """<h2>{0}</h2><br>
+                    <h3>{1}</h3>
+                    <a href="explore_tour/{2}"><h5>open details</h5></a>""".format(i.name,i.description,i.id)
+                ),
+            })
+    print(mkr)
+
+    trdmap = Map(
+        identifier="trdmap",
+        varname="trdmap",
+        style=(
+            "height:100%;"
+            "width:100%;"
+            # "top:0;"
+            # "left:0;"
+            # "position:absolute;"
+            # "z-index:200;"
+        ),
+        lat=20.593684,
+        lng=78.96288,
+        markers=mkr,
+        zoom=12,
+        cluster=True,
+    )
+
+    return render_template("index.html",trdmap=trdmap,
+        GOOGLEMAPS_KEY=request.args.get("apikey"),)
 
 # user authentication
 @app.route("/login", methods=("GET", "POST"), strict_slashes=False)
@@ -119,7 +165,7 @@ def logout():
 @app.route("/profile")
 @login_required
 def profile():
-    user = User.query.filter_by(id=flask_login.current_user.id).all()
+    user = User.query.filter_by(id=flask_login.current_user.id).first()
     print(user)
     return render_template("profile.html", user=user)
 
@@ -185,6 +231,10 @@ def addLocation():
             photos = form.photos.data
             description = form.description.data
             other_type = form.other_type.data
+            decoded = request.form
+            print("POST", decoded)
+            TourID = int(decoded["TourID"])  # default -1
+            print(TourID)
 
             newlocation = Location(
                 name = name,
@@ -195,7 +245,7 @@ def addLocation():
                 opening_timing = opening_timing,
                 description = description,
                 other_type = other_type,
-                tid = flask_login.current_user.id,
+                tid = TourID,
             )
 
             db.session.add(newlocation)
@@ -212,19 +262,21 @@ def addLocation():
         #         flash("Invalid Username or password!", "danger")
         except Exception as e:
             flash(e, "danger")
-
+    tours = Tour.query.filter_by(uid=flask_login.current_user.id).all()
+    print(tours[0].name)
     return render_template("addLocation.html",
                            form=form,
                            text="Add Location",
-                           title="Add Location"
+                           title="Add Location",
+                           tours=tours
                            )
 
 @app.route("/added_tour")
 @login_required
 def addedTour():
-    tour = Tour.query.filter_by(uid=flask_login.current_user.id).all()
-    print(tour)
-    return render_template("addedTour.html", tour=tour)
+    tours = Tour.query.filter_by(uid=flask_login.current_user.id).all()
+    print(tours)
+    return render_template("addedTour.html", tours=tours)
 
 @app.route("/explore_tour/<int:tourId>")
 @login_required

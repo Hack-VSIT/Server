@@ -5,6 +5,9 @@ from flask_migrate import Migrate
 
 from flask_login import LoginManager
 from flask_uploads import configure_uploads, IMAGES, UploadSet
+# from dynaconf import FlaskDynaconf
+
+
 
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
@@ -21,7 +24,7 @@ bcrypt = Bcrypt()
 
 def create_app():
     app = Flask(__name__)
-
+    # FlaskDynaconf(app)
     app.secret_key = '&wZzC)ihhrt(.{!D6K.UL$twQ5/8;78Gia{u!fgcgrrfgctgggEJSuBafqkBT6_k?z=u%C?=AJ?T$Dr7yvterrtygvdgfh?Ae_)pMQNj{$$=4$r{Fnk;EaMK'
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True

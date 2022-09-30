@@ -54,9 +54,9 @@ class Tour_form(FlaskForm):
     longitude =          FloatField("longitude",validators=[InputRequired()])
     latitude =           FloatField("latitude",validators=[InputRequired()])
     photos =      MultipleFileField("photos", validators=[FileAllowed(['xls', 'xlsx'], 'Excel Document only!')])
-    site =              StringField("Link for the Site",validators=[Length(1, 64)])
-    landmarks =         StringField("Names of Landmarks",validators=[Length(1, 64)])
-    opening_timing =    StringField("Opening timings",validators=[Length(1, 64)])
+    site =              StringField("Link for the Site",validators=[Length(0, 64)])
+    landmarks =         StringField("Names of Landmarks",validators=[Length(0, 64)])
+    opening_timing =    StringField("Opening timings",validators=[Length(0, 64)])
     description =       StringField("description of the Tour",validators=[InputRequired(), Length(1, 64)])
     submit=             SubmitField("Submit")
     
@@ -65,12 +65,12 @@ class Tour_form(FlaskForm):
 class Location_form(FlaskForm):
     name =              StringField("Name for the Location",validators=[InputRequired(), Length(1, 64)])
     type =              SelectField("Type ofLocation",validators=[InputRequired()], choices=[(1,""),(2,""),(3,""),(4,"")])
-    site =              StringField("Link for the Site",validators=[Length(1, 64)])
+    site =              StringField("Link for the Site",validators=[Length(0, 64)])
     longitude =          FloatField("longitude",validators=[InputRequired()])
     latitude =           FloatField("latitude",validators=[InputRequired()])
-    opening_timing =    StringField("Opening timings",validators=[Length(1, 64)])
+    opening_timing =    StringField("Opening timings",validators=[Length(0, 64)])
     photos =      MultipleFileField("photos", validators=[FileAllowed(['xls', 'xlsx'], 'Excel Document only!')])
     description =       StringField("description of the Tour",validators=[InputRequired(), Length(1, 64)])
-    other_type =        StringField("Describe the type of location",validators=[Length(1, 64)])
+    other_type =        StringField("Describe the type of location",validators=[Length(0, 64)])
     submit=             SubmitField("Submit")
     

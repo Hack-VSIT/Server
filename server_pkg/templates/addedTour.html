@@ -13,7 +13,10 @@
 </div>
 
 
-{{ tour }}
+{% for j in range(tours|length) %}
+    {{tours[j].name}}
+{% endfor %}
+
 
 
 

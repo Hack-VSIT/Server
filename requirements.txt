@@ -26,3 +26,7 @@ WTForms==2.3.3
 db-sqlite3
 flask_uploads==0.2.1
 Flask-Uploads
+
+git+https://github.com/flask-extensions/Flask-GoogleMaps
+dynaconf      
+flask-socketio

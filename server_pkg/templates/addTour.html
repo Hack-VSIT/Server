@@ -4,6 +4,22 @@
 {{ title }}
 {% endblock %}
 
+{% block head %}
+{{ super() }}
+<script type="text/javascript">
+    function setLoc() {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            document.getElementById("longitude").value = position.coords.longitude;
+            document.getElementById("latitude").value = position.coords.latitude;
+        }, function (error) {
+            console.log(error);
+        });
+    }
+    setLoc();
+
+</script>
+{% endblock %}
+
 {% block content %}
 
 <form action="{{ request.path }}" method="POST" class="card-body" , enctype="multipart/form-data">
