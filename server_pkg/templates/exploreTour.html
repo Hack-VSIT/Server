@@ -3,18 +3,34 @@
 {% block title%}
 {{ title }}
 {% endblock %}
+{% block head %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<title>Untitled</title>
+<style>
+    #map {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+{{ super() }}
+{{trdmap.js}}
+
+{% endblock %}
+
 
 {% block content %}
 
 <!-- heading -->
 <div class="text-center">
-    <h2>User Authentication in Flask</h2>
+    <h2>{{ tour.name }}</h2>
     <h5 class="text-primary">{{ text }}</h5>
 </div>
 
 
-{{ tour }}
 
-
+<div id="map">
+    {{trdmap.html}}
+</div>
 
 {% endblock %}

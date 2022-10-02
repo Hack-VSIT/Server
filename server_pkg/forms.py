@@ -64,7 +64,7 @@ class Tour_form(FlaskForm):
 
 class Location_form(FlaskForm):
     name =              StringField("Name for the Location",validators=[InputRequired(), Length(1, 64)])
-    type =              SelectField("Type ofLocation",validators=[InputRequired()], choices=[(1,""),(2,""),(3,""),(4,"")])
+    type =              SelectField("Type ofLocation",validators=[InputRequired()], choices=[(1,"Educational"),(2,"Religious"),(3,"Tourist")])
     site =              StringField("Link for the Site",validators=[Length(0, 64)])
     longitude =          FloatField("longitude",validators=[InputRequired()])
     latitude =           FloatField("latitude",validators=[InputRequired()])

@@ -8,13 +8,16 @@
 
 <!-- heading -->
 <div class="text-center">
-    <h2>User Authentication in Flask</h2>
+    <h2>Your added tours</h2>
     <h5 class="text-primary">{{ text }}</h5>
 </div>
 
 
 {% for j in range(tours|length) %}
-    {{tours[j].name}}
+    <a href="http://127.0.0.1:5000/explore_tour/{{tours[j].id}}">{{tours[j].name}}<br></a>
+    {% for i in range(locations[j]|length) %}
+    &emsp;<a href="http://127.0.0.1:5000/explore_location/{{locations[j][i].id}}">{{locations[j][i].name}} <br></a>
+    {% endfor %}
 {% endfor %}
 
 

@@ -8,16 +8,18 @@
 
 <!-- heading -->
 <div class="text-center">
-    <h2>User Authentication in Flask</h2>
-    <h5 class="text-primary">{{ text }}</h5>
+    <h2>{{text}}</h2>
+    
+    <a href="{{url_for("profile_share")}}" >share to socials</a>
 </div>
 
 
-{{ user.username }}<br>
-{{ user.email }}<br>
-{{ user.status }}<br>
-{{ user.tour }}<br>
-{{ user.cred }}<br>
+username : {{ user.username }}<br>
+coins : {{ user.coins }}<br>
+email : {{ user.email }}<br>
+status : {{ user.status }}<br>
+tour : {{ user.tour }}<br>
+cred : {{ user.cred }}<br>
 reset password<br>
 added Tours<br>
 

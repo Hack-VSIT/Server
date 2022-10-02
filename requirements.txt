@@ -30,3 +30,5 @@ Flask-Uploads
 git+https://github.com/flask-extensions/Flask-GoogleMaps
 dynaconf      
 flask-socketio
+gevent-websocket
+eventlet

@@ -12,7 +12,7 @@ from flask_bcrypt import check_password_hash
 from flask_login import login_user, logout_user, login_required
 from server_pkg.app import create_app, db, login_manager, bcrypt
 # , images
-from server_pkg.models import Tour, User,Location
+from server_pkg.models import Tour, User, Location
 from server_pkg.forms import *
 import os
 import imghdr
@@ -21,8 +21,7 @@ from SQL import SQL
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map, icons
 from dynaconf import FlaskDynaconf
-
-
+# from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
 
 
 @login_manager.user_loader
@@ -32,11 +31,11 @@ def load_user(user_id):
 
 app = create_app()
 FlaskDynaconf(app)
+# socketio = SocketIO(app, engineio_logger=True, ping_timeout=5, ping_interval=5)
 GoogleMaps(
     app,
     # key="AIzaSyB2bXKNDezDf6YNVc-SauobynNHPo4RJb8"
 )
-
 
 
 @app.before_request
@@ -49,20 +48,28 @@ def session_handler():
 
 @app.route("/", methods=("GET", "POST"), strict_slashes=False)
 def index():
-    tours = Tour.query.filter_by(uid=flask_login.current_user.id).all()
+    if request.method == "POST":
+        print(request.form["search_box_text"])
+        tours = Tour.query.filter(Tour.name.like(
+            "%" + request.form["search_box_text"] + "%")).all()
+        search_text = request.form["search_box_text"]
+    else:
+        search_text = ""
+        tours = Tour.query.all()
     print(tours)
-    mkr=[]
+    mkr = []
     for i in tours:
         mkr.append({
-                "icon": "//maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-                "lat": i.latitude,
-                "lng": i.longitude,
-                "infobox": (
+            "icon": "//maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+            "lat": i.latitude,
+            "lng": i.longitude,
+            "infobox": (
                     """<h2>{0}</h2><br>
                     <h3>{1}</h3>
-                    <a href="explore_tour/{2}"><h5>open details</h5></a>""".format(i.name,i.description,i.id)
-                ),
-            })
+                    <a href="explore_tour/{2}"><h5>open details</h5></a>
+                    <img src="static/{3}.png" style="width: 50px; height: 50px; margin-left: 10px;">""".format(i.name, i.description, i.id, i.photos)
+            ),
+        })
     print(mkr)
 
     trdmap = Map(
@@ -83,10 +90,12 @@ def index():
         cluster=True,
     )
 
-    return render_template("index.html",trdmap=trdmap,
-        GOOGLEMAPS_KEY=request.args.get("apikey"),)
+    return render_template("index.html", trdmap=trdmap,
+                           GOOGLEMAPS_KEY=request.args.get("apikey"),search_text=search_text)
 
 # user authentication
+
+
 @app.route("/login", methods=("GET", "POST"), strict_slashes=False)
 def login():
     form = login_form()
@@ -167,7 +176,16 @@ def logout():
 def profile():
     user = User.query.filter_by(id=flask_login.current_user.id).first()
     print(user)
-    return render_template("profile.html", user=user)
+    return render_template("profile.html", user=user, text="Profile of " + user.username)
+
+
+@app.route("/profile_reward")
+@login_required
+def profile_share():
+    user = User.query.filter_by(id=flask_login.current_user.id).first()
+    print(user)
+    return render_template("profile.html", user=user, text="Share on your social media")
+
 
 @app.route("/add_tour", methods=("GET", "POST"))
 @login_required
@@ -186,23 +204,23 @@ def addTour():
             landmarks = form.landmarks.data
             opening_timing = form.opening_timing.data
             description = form.description.data
-            
+
             newtour = Tour(
-                name = name,
-                longitude = longitude,
-                latitude = latitude,
+                name=name,
+                longitude=longitude,
+                latitude=latitude,
                 site=site,
                 landmarks=landmarks,
                 opening_timing=opening_timing,
-                description = description,
-                uid = flask_login.current_user.id,
+                description=description,
+                uid=flask_login.current_user.id,
             )
-
+            user = User.query.filter_by(id=flask_login.current_user.id).first()
             db.session.add(newtour)
+            user.coins = user.coins + 10
             db.session.commit()
             flash(f"tour Succesfully created", "success")
-            
-            
+
             # return redirect(url_for('index'))
         #     user = User.query.filter_by(email=form.email.data).first()
         except Exception as e:
@@ -214,6 +232,7 @@ def addTour():
                            text="Add Tour",
                            title="Add Tour"
                            )
+
 
 @app.route("/add_location", methods=("GET", "POST"))
 @login_required
@@ -237,21 +256,21 @@ def addLocation():
             print(TourID)
 
             newlocation = Location(
-                name = name,
-                type = _type,
-                site = site,
-                longitude = longitude,
-                latitude = latitude,
-                opening_timing = opening_timing,
-                description = description,
-                other_type = other_type,
-                tid = TourID,
+                name=name,
+                type=_type,
+                site=site,
+                longitude=longitude,
+                latitude=latitude,
+                opening_timing=opening_timing,
+                description=description,
+                other_type=other_type,
+                tid=TourID,
             )
-
+            user = User.query.filter_by(id=flask_login.current_user.id).first()
             db.session.add(newlocation)
+            user.coins = user.coins + 2
             db.session.commit()
             flash(f"newlocation Succesfully created", "success")
-
 
             return redirect(url_for('index'))
         #     user = User.query.filter_by(email=form.email.data).first()
@@ -271,26 +290,64 @@ def addLocation():
                            tours=tours
                            )
 
+
 @app.route("/added_tour")
 @login_required
 def addedTour():
     tours = Tour.query.filter_by(uid=flask_login.current_user.id).all()
+    locations = []
+    for tour in tours:
+        locations.append(Location.query.filter_by(tid=tour.id).all())
     print(tours)
-    return render_template("addedTour.html", tours=tours)
+    print(locations)
+    return render_template("addedTour.html", tours=tours, locations=locations)
+
 
 @app.route("/explore_tour/<int:tourId>")
-@login_required
 def exploreTour(tourId):
+    locations = Location.query.filter_by(tid=tourId).all()
+    print(locations)
+    mkr = []
+    for i in locations:
+        mkr.append({
+            "icon": "//maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+            "lat": i.latitude,
+            "lng": i.longitude,
+            "infobox": (
+                    """<h2>{0}</h2><br>
+                    <h3>{1}</h3>
+                    <a href="http://127.0.0.1:5000/explore_location/{2}"><h5>open details</h5></a>
+                    <img src="static/{3}.png" style="width: 50px; height: 50px; margin-left: 10px;">""".format(i.name, i.description, i.id, i.photos)
+            ),
+        })
+    print(mkr)
+
+    trdmap = Map(
+        identifier="trdmap",
+        varname="trdmap",
+        style=(
+            "height:1000px;"
+            "width:1000px;"
+        ),
+        lat=20.593684,
+        lng=78.96288,
+        markers=mkr,
+        zoom=12,
+        cluster=True,
+    )
     tour = Tour.query.filter_by(id=tourId).first()
     print(tour)
-    return render_template("exploreTour.html", tour=tour)
-    
+    return render_template("exploreTour.html", tour=tour, trdmap=trdmap,
+                           GOOGLEMAPS_KEY=request.args.get("apikey"))
+
+
 @app.route("/explore_location/<int:locationId>")
-@login_required
 def exploreLocation(locationId):
     loc = Location.query.filter_by(id=locationId).first()
     print(loc)
     return render_template("exploreLocation.html", loc=loc)
 
+
 if __name__ == "__main__":
     app.run(debug=True)
+    # socketio.run(app, debug=True)

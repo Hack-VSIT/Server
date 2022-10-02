@@ -11,6 +11,11 @@
 
 
     {{trdmap.js}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+
 </head>
 
 <body>
@@ -24,6 +29,7 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item"><a class="nav-link active" href="{{url_for('profile')}}">Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{url_for('addTour')}}">Add Tour</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{url_for('addLocation')}}">Add Location</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{url_for('addedTour')}}">Added Tours</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}">logout</a></li>
                     </ul>
@@ -33,7 +39,14 @@
                 </div>
             </div>
         </nav>
-        <div class="Search-box"><input type="text" style="margin-left: 30px;"></div>
+        
+        <div class="Search-box">
+            <form method="post" action="{{url_for('index')}}">
+                <input type="text" name="search_box_text" style="margin-left: 30px;" value="{{search_text}}">
+                <input type="submit" name="search_box_submit" value="Search">
+            </form>
+        </div>
+        <div id="div_test"></div>
     </section>
 
 

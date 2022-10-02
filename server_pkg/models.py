@@ -14,6 +14,7 @@ class User(UserMixin, db.Model):
     status = db.Column(db.Integer, nullable=False, default=0)
     tour = db.Column(db.Integer, nullable=False, default=0)
     cred = db.Column(db.Integer, nullable=False, default=3)
+    coins = db.Column(db.Integer, nullable=False, default=0)
     # FK reference
     tours = db.relationship('Tour', backref='user_det', lazy=True)
 
